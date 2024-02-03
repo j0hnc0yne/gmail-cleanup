@@ -28,6 +28,8 @@ import com.google.api.services.gmail.model.Message;
 /* class to demonstrate use of Gmail list labels API */
 public class GmailCleanupApplication {
 	private static Logger logger = Logger.getLogger("logger");
+	
+	private static boolean batchDelete = true;
   /**
    * Application name.
    */
@@ -113,8 +115,13 @@ public class GmailCleanupApplication {
 	    List<Message> messages = gmailService.getMessagesByFilter(filter);
 	    if (messages != null && messages.size() > 0) {
 		    logger.info(filter + "->  Messages to delete: " + messages.size());
-		    long deleted = gmailService.trashMessages(messages);
-		    logger.info(filter + "-> Messages successfully deleted: " + deleted);
+		    if (batchDelete) {
+		    	gmailService.batchDelete(messages);
+		    	logger.info(filter + "->  Batch delete complete");
+		    } else { 
+			    long deleted = gmailService.trashMessages(messages);
+			    logger.info(filter + "-> Messages successfully deleted: " + deleted);
+		    }
 	    } else {
 	    	logger.info(filter + "->  NO MESSAGES");
 	    }

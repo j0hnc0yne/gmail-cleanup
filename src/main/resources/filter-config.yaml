@@ -2,3 +2,5 @@ from:
   - '*@facebookmail.com'
   - '*@linkedin.com'
   - newsletter@email.ticketmaster.com
+category:
+  - promotions

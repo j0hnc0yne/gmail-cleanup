@@ -3,8 +3,10 @@ package dev.coyne.gmail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.api.services.gmail.Gmail;
+import com.google.api.services.gmail.model.BatchDeleteMessagesRequest;
 import com.google.api.services.gmail.model.ListMessagesResponse;
 import com.google.api.services.gmail.model.Message;
 
@@ -34,6 +36,22 @@ public class GmailService {
             }
         } while (token != null);
         return messages;
+    }
+    
+    public void batchDelete(List<Message> messages) {
+    	try {
+    		// Max size is 1000 per batch
+    		for (int i = 0; i <= (int) messages.size() / 1000; i++ ) {
+    			int startIdx = i * 1000;
+    			int length = Math.min(1000, messages.size() - startIdx);
+        		List<Message> messageSub = messages.subList(startIdx, startIdx + length);
+    			BatchDeleteMessagesRequest messagesBatch = new BatchDeleteMessagesRequest();
+    			messagesBatch.setIds(messageSub.stream().map(Message::getId).collect(Collectors.toList()));
+    			service.users().messages().batchDelete("me", messagesBatch).execute();
+    		}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
     
     public long trashMessages(List<Message> messages) {
