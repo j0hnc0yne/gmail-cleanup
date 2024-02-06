@@ -30,6 +30,7 @@ public class GmailCleanupApplication {
 	private static Logger logger = Logger.getLogger("logger");
 	
 	private static boolean batchDelete = true;
+	private static int daysToKeep = 90;
   /**
    * Application name.
    */
@@ -112,6 +113,9 @@ public class GmailCleanupApplication {
   
   private static void cleanupForFilter(String filter) {
 	try {
+		if (daysToKeep > 0) {
+			filter = filter + " Older_than:"+daysToKeep+"d";
+		}
 	    List<Message> messages = gmailService.getMessagesByFilter(filter);
 	    if (messages != null && messages.size() > 0) {
 		    logger.info(filter + "->  Messages to delete: " + messages.size());
